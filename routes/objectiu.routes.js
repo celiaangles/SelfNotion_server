@@ -2,13 +2,13 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
-const Nuvol = require("../models/Objectiu.model");
+const Objectiu = require("../models/Objectiu.model");
 
 //  POST /api/projects  -  Creates a new project
 router.post("/objectius", (req, res, next) => {
   const { serp, mico } = req.body;
 
-  Nuvol.create({ serp, mico })
+  Objectiu.create({ serp, mico })
     .then((response) => res.json(response))
     .catch((err) => res.json(err));
 });
@@ -24,6 +24,8 @@ router.get("/objectius", (req, res, next) => {
 router.get("/objectius/:objectiuId", (req, res, next) => {
   const { objectiuId } = req.params;
 
+  //   const isValid = objectiu?.isValid;
+
   if (!mongoose.Types.ObjectId.isValid(objectiuId)) {
     res.status(400).json({ message: "Specified id is not valid" });
     return;
@@ -31,9 +33,20 @@ router.get("/objectius/:objectiuId", (req, res, next) => {
 
   // Each Project document has `tasks` array holding `_id`s of Task documents
   // We use .populate() method to get swap the `_id`s for the actual Task documents
-  Nuvol.findById(objectiuId)
-    .then((objectiu) => res.status(200).json(objectiu))
-    .catch((error) => res.json(error));
+  //   Objectiu.findById(objectiuId)
+  //     .then((objectiu) => res.status(200).json(objectiu))
+  //     .catch((error) => res.json(error));
+  Objectiu.findById(objectiuId)
+    .then((objectiu) => {
+      if (!objectiu) {
+        res.status(404).json({ message: "Objectiu not found" });
+        return;
+      }
+
+      const isValid = objectiu.isValid;
+      res.status(200).json(objectiu);
+    })
+    .catch((error) => res.status(500).json(error));
 });
 
 // PUT  /api/projects/:projectId  -  Updates a specific project by id
@@ -45,13 +58,13 @@ router.put("/objectius/:objectiuId", (req, res, next) => {
     return;
   }
 
-  Nuvol.findByIdAndUpdate(objectiuId, req.body, { new: true })
+  Objectiu.findByIdAndUpdate(objectiuId, req.body, { new: true })
     .then((updatedObjectiu) => res.json(updatedObjectiu))
     .catch((error) => res.json(error));
 });
 
 // DELETE  /api/projects/:projectId  -  Deletes a specific project by id
-router.delete("/objectiu/:objectiuId", (req, res, next) => {
+router.delete("/objectius/:objectiuId", (req, res, next) => {
   const { objectiuId } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(objectiuId)) {
@@ -59,7 +72,7 @@ router.delete("/objectiu/:objectiuId", (req, res, next) => {
     return;
   }
 
-  Project.findByIdAndRemove(objectiuId)
+  Objectiu.findByIdAndDelete(objectiuId)
     .then(() =>
       res.json({
         message: `Project with ${objectiuId} is removed successfully.`,

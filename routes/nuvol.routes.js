@@ -59,7 +59,7 @@ router.delete("/nuvols/:nuvolId", (req, res, next) => {
     return;
   }
 
-  Nuvol.findByIdAndRemove(nuvolId)
+  Nuvol.findByIdAndDelete(nuvolId)
     .then(() =>
       res.json({
         message: `Project with ${nuvolId} is removed successfully.`,
