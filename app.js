@@ -9,6 +9,7 @@ require("./db");
 // https://www.npmjs.com/package/express
 const express = require("express");
 const cors = require("cors");
+const { isAuthenticated } = require("./middleware/jwt.middleware"); // <== IMPORT
 
 const app = express();
 
@@ -25,6 +26,9 @@ app.use("/api", indexRoutes);
 const projectRouter = require("./routes/project.routes");
 app.use("/api", projectRouter);
 
+// const projectRouter = require("./routes/project.routes");
+// app.use("/api", isAuthenticated, projectRouter);
+
 const nuvolRouter = require("./routes/nuvol.routes");
 app.use("/api", nuvolRouter);
 
@@ -33,6 +37,9 @@ app.use("/api", objectiuRouter);
 
 const taskRouter = require("./routes/task.routes");
 app.use("/api", taskRouter);
+
+const authRouter = require("./routes/auth.routes"); //  <== IMPORT
+app.use("/auth", authRouter);
 
 // ❗ To handle errors. Routes that don't exist or errors that you handle in specific routes
 require("./error-handling")(app);
