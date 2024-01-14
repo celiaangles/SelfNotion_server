@@ -6,9 +6,9 @@ const Objectiu = require("../models/Objectiu.model");
 
 //  POST /api/projects  -  Creates a new project
 router.post("/objectius", (req, res, next) => {
-  const { serp, mico } = req.body;
+  const { serp, mico, userId } = req.body;
 
-  Objectiu.create({ serp, mico })
+  Objectiu.create({ serp, mico, userId })
     .then((response) => res.json(response))
     .catch((err) => res.json(err));
 });

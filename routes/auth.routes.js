@@ -1,4 +1,5 @@
 // routes/auth.routes.js
+console.log("Token Secret:", process.env.TOKEN_SECRET);
 
 const express = require("express");
 const bcrypt = require("bcryptjs");
@@ -103,6 +104,8 @@ router.post("/login", (req, res, next) => {
         // Create an object that will be set as the token payload
         const payload = { _id, email, name };
 
+        console.log("Signing Token with Secret:", process.env.TOKEN_SECRET);
+
         // Create and sign the token
         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
           algorithm: "HS256",
@@ -122,15 +125,13 @@ router.post("/login", (req, res, next) => {
 
 // GET  /auth/verify  -  Used to verify JWT stored on the client
 router.get("/verify", isAuthenticated, (req, res, next) => {
-  // <== CREATE NEW ROUTE
-
-  // If JWT token is valid the payload gets decoded by the
-  // isAuthenticated middleware and made available on `req.payload`
-  console.log(`req.payload`, req.payload);
-
-  // Send back the object with user data
-  // previously set as the token payload
-  res.status(200).json(req.payload);
+  try {
+    console.log(`req.payload`, req.payload);
+    res.status(200).json(req.payload);
+  } catch (error) {
+    console.error("Error in /auth/verify:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 module.exports = router;

@@ -6,9 +6,9 @@ const Nuvol = require("../models/Nuvol.model");
 
 //  POST /api/projects  -  Creates a new project
 router.post("/nuvols", (req, res, next) => {
-  const { papallona, cuc } = req.body;
+  const { papallona, cuc, userId } = req.body;
 
-  Nuvol.create({ papallona, cuc })
+  Nuvol.create({ papallona, cuc, userId })
     .then((response) => res.json(response))
     .catch((err) => res.json(err));
 });
