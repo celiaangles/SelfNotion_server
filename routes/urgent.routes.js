@@ -1,12 +1,12 @@
 const router = require("express").Router();
 const User = require("../models/User.model");
 
-router.post("/likes/:mountainId", async (req, res, next) => {
+router.post("/urgents/:projectId", async (req, res, next) => {
   try {
     const { userId } = req.body;
-    const { mountainId } = req.params;
+    const { projectId } = req.params;
     await User.findByIdAndUpdate(userId, {
-      $push: { likedMountains: mountainId },
+      $push: { urgentedProjects: projectId },
     });
     res.status(200).json({ message: "Mountain liked successfully" });
   } catch (error) {
@@ -14,11 +14,12 @@ router.post("/likes/:mountainId", async (req, res, next) => {
   }
 });
 
-router.get("/likedmountains:userId", async (req, res, next) => {
+router.get("/urgentedprojects/:userId", async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const userLikedMountains = await User.find().populate("likedMountains");
-    res.status(200).json(userLikedMountains);
+    const userUrgentedProjects = await User.find().populate("urgentedProjects");
+
+    res.status(200).json(userUrgentedProjects);
   } catch (error) {
     next(error);
   }

@@ -26,6 +26,9 @@ app.use("/api", indexRoutes);
 const projectRouter = require("./routes/project.routes");
 app.use("/api", projectRouter);
 
+const urgentProjectsRouter = require("./routes/urgent.routes");
+app.use("/api", urgentProjectsRouter);
+
 // const projectRouter = require("./routes/project.routes");
 // app.use("/api", isAuthenticated, projectRouter);
 
