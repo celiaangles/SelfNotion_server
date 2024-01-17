@@ -38,8 +38,8 @@ app.use("/api", nuvolRouter);
 const objectiuRouter = require("./routes/objectiu.routes");
 app.use("/api", objectiuRouter);
 
-const taskRouter = require("./routes/task.routes");
-app.use("/api", taskRouter);
+const fantasmaRouter = require("./routes/fantasma.routes");
+app.use("/api", fantasmaRouter);
 
 const authRouter = require("./routes/auth.routes"); //  <== IMPORT
 app.use("/auth", authRouter);

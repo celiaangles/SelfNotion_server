@@ -3,19 +3,25 @@ const router = express.Router();
 const mongoose = require("mongoose");
 
 const Nuvol = require("../models/Nuvol.model");
+const Fantasma = require("../models/Fantasma.model");
 
-//  POST /api/projects  -  Creates a new project
+// POST /api/projects  -  Creates a new project
 router.post("/nuvols", (req, res, next) => {
   const { papallona, cuc, userId } = req.body;
 
-  Nuvol.create({ papallona, cuc, userId })
+  Nuvol.create({ papallona, cuc, userId, fantasmes: [] })
     .then((response) => res.json(response))
-    .catch((err) => res.json(err));
+    .catch((err) => {
+      console.log("Error while creating the project", err);
+      res.status(500).json({ message: "Error while creating the project" });
+    });
 });
 
 //  GET /api/projects -  Retrieves all of the projects
 router.get("/nuvols", (req, res, next) => {
   Nuvol.find()
+    .populate("fantasmes")
+
     .then((allNuvols) => res.json(allNuvols))
     .catch((err) => res.json(err));
 });
@@ -32,6 +38,8 @@ router.get("/nuvols/:nuvolId", (req, res, next) => {
   // Each Project document has `tasks` array holding `_id`s of Task documents
   // We use .populate() method to get swap the `_id`s for the actual Task documents
   Nuvol.findById(nuvolId)
+    .populate("fantasmes")
+
     .then((nuvol) => res.status(200).json(nuvol))
     .catch((error) => res.json(error));
 });
