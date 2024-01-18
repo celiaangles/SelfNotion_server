@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const Nuvol = require("../models/Nuvol.model");
 const Fantasma = require("../models/Fantasma.model");
 
-// POST /api/projects  -  Creates a new project
 router.post("/nuvols", (req, res, next) => {
   const { papallona, cuc, userId } = req.body;
 
@@ -17,7 +16,6 @@ router.post("/nuvols", (req, res, next) => {
     });
 });
 
-//  GET /api/projects -  Retrieves all of the projects
 router.get("/nuvols", (req, res, next) => {
   Nuvol.find()
     .populate("fantasmes")
@@ -26,7 +24,6 @@ router.get("/nuvols", (req, res, next) => {
     .catch((err) => res.json(err));
 });
 
-//  GET /api/projects/:projectId -  Retrieves a specific project by id
 router.get("/nuvols/:nuvolId", (req, res, next) => {
   const { nuvolId } = req.params;
 
@@ -35,8 +32,6 @@ router.get("/nuvols/:nuvolId", (req, res, next) => {
     return;
   }
 
-  // Each Project document has `tasks` array holding `_id`s of Task documents
-  // We use .populate() method to get swap the `_id`s for the actual Task documents
   Nuvol.findById(nuvolId)
     .populate("fantasmes")
 
@@ -44,7 +39,6 @@ router.get("/nuvols/:nuvolId", (req, res, next) => {
     .catch((error) => res.json(error));
 });
 
-// PUT  /api/projects/:projectId  -  Updates a specific project by id
 router.put("/nuvols/:nuvolId", (req, res, next) => {
   const { nuvolId } = req.params;
 
@@ -58,7 +52,6 @@ router.put("/nuvols/:nuvolId", (req, res, next) => {
     .catch((error) => res.json(error));
 });
 
-// DELETE  /api/projects/:projectId  -  Deletes a specific project by id
 router.delete("/nuvols/:nuvolId", (req, res, next) => {
   const { nuvolId } = req.params;
 

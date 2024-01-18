@@ -4,8 +4,8 @@ const { Schema, model } = mongoose;
 const projectSchema = new Schema({
   title: String,
   description: String,
-  userId: { type: Schema.Types.ObjectId, ref: "User" }, // Add this line for user association
-  isUrgent: { type: Boolean, default: false }, // Add this line for urgency
+  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  isUrgent: { type: Boolean, default: false },
 });
 
 module.exports = model("Project", projectSchema);

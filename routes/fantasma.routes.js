@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const Fantasma = require("../models/Fantasma.model");
 const Nuvol = require("../models/Nuvol.model");
 
-//  POST /api/fantasmes  -  Creates a new fantasma
 router.post("/fantasmes", (req, res, next) => {
   const { title, description, nuvolId } = req.body;
 
