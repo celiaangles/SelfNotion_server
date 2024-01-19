@@ -1,12 +1,11 @@
 const router = require("express").Router();
 const User = require("../models/User.model");
 
-router.post("/urgents/:projectId", async (req, res, next) => {
+router.post("/urgents", async (req, res, next) => {
   try {
-    const { userId } = req.body;
-    const { projectId } = req.params;
+    const { userId, projectIds } = req.body; // projectIds should be an array of project IDs
     await User.findByIdAndUpdate(userId, {
-      $push: { urgentedProjects: projectId },
+      $push: { urgentedProjects: { $each: projectIds } },
     });
     res.status(200).json({ message: "Mountain liked successfully" });
   } catch (error) {
@@ -17,9 +16,13 @@ router.post("/urgents/:projectId", async (req, res, next) => {
 router.get("/urgentedprojects/:userId", async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const userUrgentedProjects = await User.find().populate("urgentedProjects");
+    const user = await User.findById(userId).populate("urgentedProjects");
 
-    res.status(200).json(userUrgentedProjects);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user.urgentedProjects);
   } catch (error) {
     next(error);
   }
