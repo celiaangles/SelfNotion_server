@@ -13,18 +13,34 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Create a new comment
+// Create or Update a comment
 router.post("/", async (req, res) => {
-  const { text, userId } = req.body;
+  const { text, userId, commentId } = req.body;
 
   try {
+    // Check if commentId is provided; if yes, update the existing comment
+    if (commentId) {
+      const updatedComment = await Comment.findByIdAndUpdate(
+        commentId,
+        { text, updatedAt: Date.now() },
+        { new: true }
+      );
+
+      if (!updatedComment) {
+        return res.status(404).json({ message: "Comment not found" });
+      }
+
+      return res.json(updatedComment);
+    }
+
+    // If commentId is not provided, create a new comment
     const newComment = await Comment.create({ text, userId });
     res.status(201).json(newComment);
   } catch (error) {
-    res.status(500).json({ message: "Error creating comment", error });
+    res.status(500).json({ message: "Error creating/updating comment", error });
   }
 });
 
-// Other routes like updating and deleting comments can be added if needed
+// Other routes like deleting comments can be added if needed
 
 module.exports = router;
