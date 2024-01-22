@@ -6,41 +6,34 @@ const Comment = require("../models/Comment.model");
 // Get all comments
 router.get("/", async (req, res) => {
   try {
-    const comments = await Comment.find();
+    const comments = await Comment.find({ userId: req.query.userId });
     res.json(comments);
   } catch (error) {
     res.status(500).json({ message: "Error fetching comments", error });
   }
 });
 
-// Create or Update a comment
+// Create or update a comment
 router.post("/", async (req, res) => {
   const { text, userId, commentId } = req.body;
 
   try {
-    // Check if commentId is provided; if yes, update the existing comment
     if (commentId) {
+      // Update existing comment
       const updatedComment = await Comment.findByIdAndUpdate(
         commentId,
-        { text, updatedAt: Date.now() },
+        { text },
         { new: true }
       );
-
-      if (!updatedComment) {
-        return res.status(404).json({ message: "Comment not found" });
-      }
-
-      return res.json(updatedComment);
+      res.status(200).json(updatedComment);
+    } else {
+      // Create a new comment
+      const newComment = await Comment.create({ text, userId });
+      res.status(201).json(newComment);
     }
-
-    // If commentId is not provided, create a new comment
-    const newComment = await Comment.create({ text, userId });
-    res.status(201).json(newComment);
   } catch (error) {
     res.status(500).json({ message: "Error creating/updating comment", error });
   }
 });
-
-// Other routes like deleting comments can be added if needed
 
 module.exports = router;
