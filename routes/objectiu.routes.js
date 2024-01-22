@@ -1,21 +1,39 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-
+const User = require("../models/User.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 const Objectiu = require("../models/Objectiu.model");
 
-router.post("/objectius", (req, res, next) => {
-  const { serp, mico, userId } = req.body;
+router.post("/objectius", isAuthenticated, async (req, res, next) => {
+  try {
+    const userId = req.payload._id;
 
-  Objectiu.create({ serp, mico, userId })
-    .then((response) => res.json(response))
-    .catch((err) => res.json(err));
+    const { serp, mico } = req.body;
+    const newObjectiu = await Objectiu.create({
+      serp,
+      mico,
+      userId,
+    });
+
+    await User.findByIdAndUpdate(userId, {
+      $push: { createdObjectius: newObjectiu._id },
+    });
+
+    res.status(201).json(newObjectiu);
+  } catch (error) {
+    res.json(error);
+    next(error);
+  }
 });
 
-router.get("/objectius", (req, res, next) => {
-  Objectiu.find()
-    .then((allObjectius) => res.json(allObjectius))
-    .catch((err) => res.json(err));
+router.get("/objectius", async (req, res, next) => {
+  try {
+    const allObjectius = await Objectiu.find({});
+    res.status(200).json(allObjectius);
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.get("/objectius/:objectiuId", (req, res, next) => {

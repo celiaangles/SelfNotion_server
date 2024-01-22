@@ -1,19 +1,31 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
-
+const User = require("../models/User.model");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 const Nuvol = require("../models/Nuvol.model");
 const Fantasma = require("../models/Fantasma.model");
 
-router.post("/nuvols", (req, res, next) => {
-  const { papallona, cuc, userId } = req.body;
+router.post("/nuvols", isAuthenticated, async (req, res, next) => {
+  try {
+    const userId = req.payload._id;
 
-  Nuvol.create({ papallona, cuc, userId, fantasmes: [] })
-    .then((response) => res.json(response))
-    .catch((err) => {
-      console.log("Error while creating the project", err);
-      res.status(500).json({ message: "Error while creating the project" });
+    const { papallona, cuc } = req.body;
+    const newNuvol = await Nuvol.create({
+      papallona,
+      cuc,
+      userId,
     });
+
+    await User.findByIdAndUpdate(userId, {
+      $push: { createdNuvols: newNuvol._id },
+    });
+
+    res.status(201).json(newNuvol);
+  } catch (error) {
+    res.json(error);
+    next(error);
+  }
 });
 
 router.get("/nuvols", (req, res, next) => {
