@@ -13,7 +13,6 @@ router.post("/projects", isAuthenticated, async (req, res, next) => {
     const newProject = await Project.create({
       title,
       description,
-      character,
       userId,
     });
 
@@ -59,6 +58,50 @@ router.get("/projects/:projectId", async (req, res, next) => {
   }
 });
 
+router.put("/projects/:projectId", isAuthenticated, async (req, res, next) => {
+  try {
+    const { projectId } = req.params;
+    const userId = req.payload._id;
+
+    if (!mongoose.Types.ObjectId.isValid(projectId)) {
+      res.status(400).json({ message: "Specified id is not valid" });
+      return;
+    }
+
+    // Assuming you want to ensure that the user can only update their own projects
+    const project = await Project.findById(projectId);
+
+    if (!project) {
+      res.status(404).json({ message: "Project not found" });
+      return;
+    }
+
+    // Check if the user is the owner of the project
+    if (project.userId.toString() !== userId.toString()) {
+      res
+        .status(403)
+        .json({ message: "You do not have permission to update this project" });
+      return;
+    }
+
+    const { title, description } = req.body;
+
+    // Update the project
+    const updatedProject = await Project.findByIdAndUpdate(
+      projectId,
+      {
+        title,
+        description,
+      },
+      { new: true }
+    );
+
+    res.status(200).json(updatedProject);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // router.put("/projects/:projectId", isAuthenticated, async (req, res, next) => {
 //   try {
 //     const { projectId } = req.params;
@@ -86,18 +129,18 @@ router.get("/projects/:projectId", async (req, res, next) => {
 //   }
 // });
 
-router.put("/projects/:projectId", (req, res, next) => {
-  const { projectId } = req.params;
+// router.put("/projects/:projectId", (req, res, next) => {
+//   const { projectId } = req.params;
 
-  if (!mongoose.Types.ObjectId.isValid(projectId)) {
-    res.status(400).json({ message: "Specified id is not valid" });
-    return;
-  }
+//   if (!mongoose.Types.ObjectId.isValid(projectId)) {
+//     res.status(400).json({ message: "Specified id is not valid" });
+//     return;
+//   }
 
-  Project.findByIdAndUpdate(projectId, req.body, { new: true })
-    .then((updatedProject) => res.json(updatedProject))
-    .catch((error) => res.json(error));
-});
+//   Project.findByIdAndUpdate(projectId, req.body, { new: true })
+//     .then((updatedProject) => res.json(updatedProject))
+//     .catch((error) => res.json(error));
+// });
 
 router.delete(
   "/projects/:projectId",

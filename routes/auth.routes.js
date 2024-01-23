@@ -1,12 +1,88 @@
-console.log("Token Secret:", process.env.TOKEN_SECRET);
-
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
 const User = require("../models/User.model");
-
-const router = express.Router();
 const { isAuthenticated } = require("./../middleware/jwt.middleware.js"); // <== IMPORT
+
+const router = express.Router(); // Move this line to the top
+
+// Multer setup for handling file uploads
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // Folder where profile pictures will be stored
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(
+      null,
+      file.fieldname +
+        "-" +
+        uniqueSuffix +
+        "." +
+        file.originalname.split(".").pop()
+    );
+  },
+});
+
+const upload = multer({ storage });
+
+// Upload endpoint for profile pictures
+router.post(
+  "/upload-profile-picture",
+  isAuthenticated,
+  upload.single("profilePicture"),
+  (req, res) => {
+    const userId = req.payload._id;
+
+    // Save the file path to the user's profile picture field in the database
+    const profilePicturePath = req.file.path;
+
+    User.findByIdAndUpdate(
+      userId,
+      { profilePicture: profilePicturePath },
+      { new: true }
+    )
+      .then((updatedUser) => {
+        res.status(200).json({
+          message: "Profile picture uploaded successfully!",
+          user: updatedUser,
+        });
+      })
+      .catch((error) => {
+        console.error("Error updating user with profile picture:", error);
+        res
+          .status(500)
+          .json({ message: "Internal Server Error", error: error.message });
+      });
+  }
+);
+
+router.put("/update-user-info", isAuthenticated, (req, res) => {
+  const userId = req.payload._id;
+  const { bio, location, birthday /* add more fields as needed */ } = req.body;
+
+  User.findByIdAndUpdate(
+    userId,
+    { bio, location, birthday /* add more fields as needed */ },
+    { new: true }
+  )
+    .then((updatedUser) => {
+      res.status(200).json({
+        message: "User information updated successfully!",
+        user: updatedUser,
+      });
+    })
+    .catch((error) => {
+      console.error("Error updating user information:", error);
+      res.status(500).json({
+        message: "Internal Server Error",
+        error: error.message,
+      });
+    });
+});
+
+module.exports = router;
 
 const saltRounds = 10;
 
@@ -94,8 +170,6 @@ router.post("/login", (req, res, next) => {
     })
     .catch((err) => res.status(500).json({ message: "Internal Server Error" }));
 });
-
-// ...
 
 router.get("/verify", isAuthenticated, (req, res, next) => {
   try {

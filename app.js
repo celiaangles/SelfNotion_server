@@ -12,6 +12,9 @@ const commentRoutes = require("./routes/comment.routes");
 
 const app = express();
 
+app.use(express.static("uploads"));
+app.use("/uploads", express.static("uploads")); // Add this line to serve static files
+
 app.use(cors());
 app.use(express.json()); // Add this line to enable JSON parsing
 
