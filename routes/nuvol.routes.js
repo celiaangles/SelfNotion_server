@@ -6,6 +6,7 @@ const { isAuthenticated } = require("../middleware/jwt.middleware");
 const Nuvol = require("../models/Nuvol.model");
 const Fantasma = require("../models/Fantasma.model");
 const Bruixa = require("../models/Bruixa.model");
+const Goblin = require("../models/Goblin.model");
 
 router.post("/nuvols", isAuthenticated, async (req, res, next) => {
   try {
@@ -33,6 +34,7 @@ router.get("/nuvols", (req, res, next) => {
   Nuvol.find()
     .populate("fantasmes")
     .populate("bruixes") //added
+    .populate("goblins") //added
 
     .then((allNuvols) => res.json(allNuvols))
     .catch((err) => res.json(err));
@@ -49,6 +51,7 @@ router.get("/nuvols/:nuvolId", (req, res, next) => {
   Nuvol.findById(nuvolId)
     .populate("fantasmes")
     .populate("bruixes") //added
+    .populate("goblins") //added
 
     .then((nuvol) => res.status(200).json(nuvol))
     .catch((error) => res.json(error));

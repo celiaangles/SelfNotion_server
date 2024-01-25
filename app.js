@@ -43,6 +43,9 @@ app.use("/api", fantasmaRouter);
 const bruixaRouter = require("./routes/bruixa.routes");
 app.use("/api", bruixaRouter);
 
+const goblinRouter = require("./routes/goblin.routes");
+app.use("/api", goblinRouter);
+
 const authRouter = require("./routes/auth.routes");
 app.use("/auth", authRouter);
 
