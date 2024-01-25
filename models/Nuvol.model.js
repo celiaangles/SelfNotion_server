@@ -6,6 +6,7 @@ const nuvolSchema = new Schema({
   cuc: String,
   userId: { type: Schema.Types.ObjectId, ref: "User" },
   fantasmes: [{ type: Schema.Types.ObjectId, ref: "Fantasma" }],
+  bruixes: [{ type: Schema.Types.ObjectId, ref: "Bruixa" }],
 });
 
 module.exports = model("Nuvol", nuvolSchema);

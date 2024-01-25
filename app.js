@@ -40,6 +40,9 @@ app.use("/api", objectiuRouter);
 const fantasmaRouter = require("./routes/fantasma.routes");
 app.use("/api", fantasmaRouter);
 
+const bruixaRouter = require("./routes/bruixa.routes");
+app.use("/api", bruixaRouter);
+
 const authRouter = require("./routes/auth.routes");
 app.use("/auth", authRouter);
 
