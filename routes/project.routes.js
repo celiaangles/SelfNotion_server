@@ -9,10 +9,11 @@ router.post("/projects", isAuthenticated, async (req, res, next) => {
   try {
     const userId = req.payload._id;
 
-    const { title, description } = req.body;
+    const { title, description, phone } = req.body;
     const newProject = await Project.create({
       title,
       description,
+      phone,
       userId,
     });
 
@@ -84,7 +85,7 @@ router.put("/projects/:projectId", isAuthenticated, async (req, res, next) => {
       return;
     }
 
-    const { title, description } = req.body;
+    const { title, description, phone } = req.body;
 
     // Update the project
     const updatedProject = await Project.findByIdAndUpdate(
@@ -92,6 +93,7 @@ router.put("/projects/:projectId", isAuthenticated, async (req, res, next) => {
       {
         title,
         description,
+        phone,
       },
       { new: true }
     );
@@ -101,46 +103,6 @@ router.put("/projects/:projectId", isAuthenticated, async (req, res, next) => {
     next(error);
   }
 });
-
-// router.put("/projects/:projectId", isAuthenticated, async (req, res, next) => {
-//   try {
-//     const { projectId } = req.params;
-//     const userId = req.payload._id;
-
-//     const { title, description } = req.body;
-
-//     if (!mongoose.Types.ObjectId.isValid(projectId)) {
-//       res.status(400).json({ message: "Specified id is not valid" });
-//       return;
-//     }
-
-//     const updatedProject = await Project.findByIdAndUpdate(
-//       projectId,
-//       {
-//         title,
-//         description,
-//       },
-//       { new: true }
-//     );
-
-//     res.status(200).json(updatedProject);
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
-// router.put("/projects/:projectId", (req, res, next) => {
-//   const { projectId } = req.params;
-
-//   if (!mongoose.Types.ObjectId.isValid(projectId)) {
-//     res.status(400).json({ message: "Specified id is not valid" });
-//     return;
-//   }
-
-//   Project.findByIdAndUpdate(projectId, req.body, { new: true })
-//     .then((updatedProject) => res.json(updatedProject))
-//     .catch((error) => res.json(error));
-// });
 
 router.delete(
   "/projects/:projectId",

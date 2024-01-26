@@ -9,10 +9,11 @@ router.post("/objectius", isAuthenticated, async (req, res, next) => {
   try {
     const userId = req.payload._id;
 
-    const { serp, mico } = req.body;
+    const { serp, mico, mussol } = req.body;
     const newObjectiu = await Objectiu.create({
       serp,
       mico,
+      mussol,
       userId,
     });
 
