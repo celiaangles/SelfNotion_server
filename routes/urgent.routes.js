@@ -28,4 +28,25 @@ router.get("/urgentedprojects/:userId", async (req, res, next) => {
   }
 });
 
+router.delete("/urgents/remove", async (req, res, next) => {
+  try {
+    const { userId, projectIds } = req.body;
+
+    // Update the user document to remove projects from urgents
+    const result = await User.findByIdAndUpdate(userId, {
+      $pull: { urgentedProjects: { $in: projectIds } },
+    });
+
+    if (!result) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res
+      .status(200)
+      .json({ message: "Projects removed from urgents successfully" });
+  } catch (error) {
+    next(error);
+  }
+});
+
 module.exports = router;

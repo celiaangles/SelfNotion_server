@@ -11,11 +11,13 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 router.post("/goblins", upload.single("flowerImage"), (req, res, next) => {
-  console.log("Request Body:", req.body); // Log the request body
+  console.log("Request Body:", req.body);
   console.log("Request File:", req.file);
+
   if (!req.file) {
     return res.status(400).json({ message: "File not provided" });
   }
+
   const { garden, nuvolId } = req.body;
   const flower = {
     data: req.file.buffer,
@@ -28,9 +30,13 @@ router.post("/goblins", upload.single("flowerImage"), (req, res, next) => {
         $push: { goblins: newGoblin._id },
       });
     })
-    .then((response) => res.json(response))
+    .then((response) => {
+      // Send a success response
+      res.json(response);
+    })
     .catch((err) => {
       console.log("Error while creating the goblin", err);
+      // Send an error response
       res.status(500).json({ message: "Error while creating the goblin" });
     });
 });
